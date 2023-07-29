@@ -80,7 +80,8 @@ function ix.config.SetDefault(key, value)
 		-- set up dummy config if we're setting default of config that doesn't exist yet (i.e schema setting framework default)
 		ix.config.stored[key] = {
 			value = value,
-			default = value
+			default = value,
+			dummy = true
 		}
 	end
 end

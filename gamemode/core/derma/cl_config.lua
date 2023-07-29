@@ -41,6 +41,10 @@ function PANEL:Populate()
 				continue
 			end
 
+			if (v.dummy) then
+				continue
+			end
+
 			local data = v.data.data
 			local type = v.type
 			local value = ix.util.SanitizeType(type, ix.config.Get(k))
