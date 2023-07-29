@@ -839,6 +839,16 @@ end
 function SaveData()
 end
 
+--- Called when a player's scoreboard entry is being updated, allowing you to modify the contents.
+-- @realm client
+-- @panel panel The `ixScoreboardRow` panel that is being updated.
+-- @player client The player the panel belongs to.
+-- @usage function PLUGIN:ScoreboardUpdatePlayer(panel, client)
+--  panel.icon:SetHidden(true) -- Hide the player's model from view
+-- end
+function ScoreboardUpdatePlayer(panel, client)
+end
+
 --- @realm client
 function ScreenResolutionChanged(width, height)
 end

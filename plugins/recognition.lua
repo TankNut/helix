@@ -3,6 +3,10 @@ PLUGIN.name = "Recognition"
 PLUGIN.author = "Chessnut"
 PLUGIN.description = "Adds the ability to recognize people."
 
+ix.config.Add("scoreboardRecognition", false, "Whether or not recognition is used in the scoreboard.", nil, {
+	category = "characters"
+})
+
 do
 	local character = ix.meta.character
 
@@ -75,12 +79,6 @@ if (CLIENT) then
 		end
 	end
 
-	function PLUGIN:ShouldAllowScoreboardOverride(client)
-		if (ix.config.Get("scoreboardRecognition")) then
-			return true
-		end
-	end
-
 	function PLUGIN:GetCharacterName(client, chatType)
 		if (client != LocalPlayer()) then
 			local character = client:GetCharacter()
@@ -100,6 +98,24 @@ if (CLIENT) then
 				end
 			end
 		end
+	end
+
+	function PLUGIN:ScoreboardUpdatePlayer(panel, client)
+		if (!ix.config.Get("scoreboardRecognition")) then
+			return
+		end
+
+		local bRecognize = false
+		local localCharacter = LocalPlayer():GetCharacter()
+		local character = IsValid(client) and client:GetCharacter()
+
+		if (localCharacter and character) then
+			bRecognize = hook.Run("IsCharacterRecognized", localCharacter, character:GetID())
+				or hook.Run("IsPlayerRecognized", client)
+		end
+
+		panel.icon:SetHidden(!bRecognize)
+		panel:SetZPos(bRecognize and 1 or 2)
 	end
 
 	local function Recognize(level)

@@ -131,9 +131,6 @@ ix.config.Add("communityText", "@community",
 ix.config.Add("vignette", true, "Whether or not the vignette is shown.", nil, {
 	category = "appearance"
 })
-ix.config.Add("scoreboardRecognition", false, "Whether or not recognition is used in the scoreboard.", nil, {
-	category = "characters"
-})
 ix.config.Add("defaultMoney", 0, "The amount of money that players start with.", nil, {
 	category = "characters",
 	data = {min = 0, max = 1000}
