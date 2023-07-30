@@ -15,6 +15,10 @@ function PANEL:Populate()
 	local categoryIndices = {}
 
 	for k, v in pairs(ix.config.stored) do
+		if (v.dummy) then
+			continue
+		end
+
 		local index = v.data and v.data.category or "misc"
 
 		categories[index] = categories[index] or {}
