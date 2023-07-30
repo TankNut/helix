@@ -6,12 +6,19 @@ function GM:PlayerInitialSpawn(client)
 
 	if (client:IsBot()) then
 		local botID = os.time() + client:EntIndex()
-		local index = math.random(1, table.Count(ix.faction.indices))
-		local faction = ix.faction.indices[index]
+		local faction
+
+		for _, v in pairs(ix.faction.indices) do
+			if (v.isDefault) then
+				faction = v
+				break
+			end
+		end
 
 		local character = ix.char.New({
 			name = client:Name(),
-			faction = faction and faction.uniqueID or "unknown",
+			description = "Hi! I am a bot!",
+			faction = faction and faction.uniqueID or "Unknown",
 			model = faction and table.Random(faction:GetModels(client)) or "models/gman.mdl"
 		}, botID, client, client:SteamID64())
 		character.isBot = true
