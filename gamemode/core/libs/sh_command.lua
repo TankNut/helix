@@ -109,7 +109,7 @@ local function ArgumentCheckStub(command, client, given)
 			result[#result + 1] = value
 		elseif (argType == ix.type.player or argType == ix.type.character) then
 			local bPlayer = argType == ix.type.player
-			local value = ix.util.FindPlayer(argument or "") -- argument could be nil due to optional type
+			local value = ix.util.FindPlayer(argument or "", nil, client) -- argument could be nil due to optional type
 
 			-- FindPlayer emits feedback for us
 			if (!value and !bOptional) then
@@ -443,7 +443,7 @@ if (SERVER) then
 	-- @treturn[2] nil If a player could not be found
 	-- @see ix.util.FindPlayer
 	function ix.command.FindPlayer(client, name)
-		local target = isstring(name) and ix.util.FindPlayer(name) or NULL
+		local target = isstring(name) and ix.util.FindPlayer(name, nil, client) or NULL
 
 		if (IsValid(target)) then
 			return target

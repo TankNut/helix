@@ -241,8 +241,20 @@ end
 -- @realm shared
 -- @string identifier Search query
 -- @bool[opt=false] bAllowPatterns Whether or not to accept Lua patterns in `identifier`
+-- @player[opt=nil] client The client to use as a reference, allowing for the ^ and - identifiers to identify the client, or the player they're looking at
 -- @treturn player Player that matches the given search query - this will be `nil` if a player could not be found
-function ix.util.FindPlayer(identifier, bAllowPatterns)
+function ix.util.FindPlayer(identifier, bAllowPatterns, client)
+	if IsValid(client) then
+		if identifier == "^" then
+			return client
+		elseif identifier == "-" then
+			local hitEntity = client:GetEyeTrace().Entity
+
+			print(hitEntity)
+
+			return hitEntity:IsPlayer() and hitEntity or nil
+		end
+	end
 	if (string.find(identifier, "STEAM_(%d+):(%d+):(%d+)")) then
 		return player.GetBySteamID(identifier)
 	end
