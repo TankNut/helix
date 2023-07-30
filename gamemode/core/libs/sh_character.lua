@@ -1201,6 +1201,37 @@ do
 end
 
 do
+	-- Display name/description handling
+
+	local characterMeta = ix.meta.character
+	local playerMeta = FindMetaTable("Player")
+
+	-- Name
+
+	function characterMeta:GetDisplayName()
+		return hook.Run("GetCharacterName", self)
+	end
+
+	function playerMeta:GetDisplayName()
+		local character = self:GetCharacter()
+
+		return character and character:GetDisplayName() or self:SteamName()
+	end
+
+	-- Description
+
+	function characterMeta:GetDisplayDescription()
+		return hook.Run("GetCharacterDescription", self)
+	end
+
+	function playerMeta:GetDisplayDescription()
+		local character = self:GetCharacter()
+
+		return character and character:GetDisplayDescription() or ""
+	end
+end
+
+do
 	--- Character util functions for player
 	-- @classmod Player
 

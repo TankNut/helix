@@ -151,7 +151,7 @@ function ix.chat.Register(chatType, data)
 		function data:OnChatAdd(speaker, text, anonymous, info)
 			local color = self.color
 			local name = anonymous and
-				L"someone" or hook.Run("GetCharacterName", speaker, chatType) or
+				L"someone" or hook.Run("GetSpeakerName", speaker, chatType) or
 				(IsValid(speaker) and speaker:Name() or "Console")
 
 			if (self.GetColor) then

@@ -698,7 +698,7 @@ function GM:PopulateImportantCharacterInfo(client, character, container)
 	-- name
 	local name = container:AddRow("name")
 	name:SetImportant()
-	name:SetText(hookRun("GetCharacterName", client) or character:GetName())
+	name:SetText(character:GetDisplayName())
 	name:SetBackgroundColor(color)
 	name:SizeToContents()
 

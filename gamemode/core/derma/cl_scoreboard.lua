@@ -171,13 +171,26 @@ function PANEL:Init()
 	self.nextThink = CurTime() + 1
 end
 
+function PANEL:SetName(name)
+	if (self.name:GetText() != name) then
+		self.name:SetText(name)
+		self.name:SizeToContents()
+	end
+end
+
+function PANEL:SetDescription(description)
+	if (self.description:GetText() != description) then
+		self.description:SetText(description)
+		self.description:SizeToContents()
+	end
+end
+
 function PANEL:Update()
 	local client = self.player
 	local model = client:GetModel()
 	local skin = client:GetSkin()
-	local name = client:GetName()
-	local description = hook.Run("GetCharacterDescription", client) or
-		(client:GetCharacter() and client:GetCharacter():GetDescription()) or ""
+	local name = client:GetDisplayName()
+	local description = client:GetDisplayDescription()
 
 	-- no easy way to check bodygroups so we'll just set them anyway
 	for _, v in pairs(client:GetBodyGroups()) do
@@ -189,15 +202,8 @@ function PANEL:Update()
 		self.icon:SetTooltip(nil)
 	end
 
-	if (self.name:GetText() != name) then
-		self.name:SetText(name)
-		self.name:SizeToContents()
-	end
-
-	if (self.description:GetText() != description) then
-		self.description:SetText(description)
-		self.description:SizeToContents()
-	end
+	self:SetName(name)
+	self:SetDescription(description)
 
 	hook.Run("ScoreboardUpdatePlayer", self, client)
 end

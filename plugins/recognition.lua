@@ -8,54 +8,44 @@ ix.config.Add("scoreboardRecognition", false, "Whether or not recognition is use
 })
 
 do
-	local character = ix.meta.character
+	local characterMeta = ix.meta.character
 
 	if (SERVER) then
-		function character:Recognize(id)
+		function characterMeta:Recognize(id)
 			if (!isnumber(id) and id.GetID) then
 				id = id:GetID()
 			end
 
 			local recognized = self:GetData("rgn", "")
 
-			if (recognized != "" and recognized:find(","..id..",")) then
+			if (recognized != "" and recognized:find("," .. id .. ",")) then
 				return false
 			end
 
-			self:SetData("rgn", recognized..","..id..",")
+			self:SetData("rgn", recognized .. "," .. id .. ",")
 
 			return true
 		end
 	end
 
-	function character:DoesRecognize(id)
-		if (!isnumber(id) and id.GetID) then
-			id = id:GetID()
-		end
-
-		return hook.Run("IsCharacterRecognized", self, id)
+	function characterMeta:DoesRecognize(character)
+		return hook.Run("IsCharacterRecognized", self, character)
 	end
 
-	function PLUGIN:IsCharacterRecognized(char, id)
-		if (char.id == id) then
+	function GAMEMODE:IsCharacterRecognized(character, target)
+		if (character == target) then
 			return true
 		end
 
-		local other = ix.char.loaded[id]
+		local faction = ix.faction.indices[target:GetFaction()]
 
-		if (other) then
-			local faction = ix.faction.indices[other:GetFaction()]
-
-			if (faction and faction.isGloballyRecognized) then
-				return true
-			end
-		end
-
-		local recognized = char:GetData("rgn", "")
-
-		if (recognized != "" and recognized:find(","..id..",")) then
+		if (faction and faction.isGloballyRecognized) then
 			return true
 		end
+
+		local recognized = character:GetData("rgn", "")
+
+		return recognized != "" and recognized:find("," .. target:GetID() .. ",")
 	end
 end
 
@@ -66,37 +56,29 @@ if (CLIENT) then
 	CHAT_RECOGNIZED["w"] = true
 	CHAT_RECOGNIZED["me"] = true
 
-	function PLUGIN:IsRecognizedChatType(chatType)
+	function GAMEMODE:IsRecognizedChatType(chatType)
 		if (CHAT_RECOGNIZED[chatType]) then
 			return true
 		end
 	end
 
-	function PLUGIN:GetCharacterDescription(client)
-		if (client:GetCharacter() and client != LocalPlayer() and LocalPlayer():GetCharacter() and
-			!LocalPlayer():GetCharacter():DoesRecognize(client:GetCharacter()) and !hook.Run("IsPlayerRecognized", client)) then
-			return L"noRecog"
+	function PLUGIN:GetCharacterName(character)
+		if (!LocalPlayer():GetCharacter():DoesRecognize(character)) then
+			return L("unknown")
 		end
 	end
 
-	function PLUGIN:GetCharacterName(client, chatType)
-		if (client != LocalPlayer()) then
-			local character = client:GetCharacter()
-			local ourCharacter = LocalPlayer():GetCharacter()
+	function PLUGIN:GetSpeakerName(client, chatType)
+		local character = client:GetCharacter()
 
-			if (ourCharacter and character and !ourCharacter:DoesRecognize(character) and !hook.Run("IsPlayerRecognized", client)) then
-				if (chatType and hook.Run("IsRecognizedChatType", chatType)) then
-					local description = character:GetDescription()
+		if (hook.Run("IsRecognizedChatType", chatType) and !LocalPlayer():GetCharacter():DoesRecognize(character)) then
+			local description = character:GetDisplayDescription()
 
-					if (#description > 40) then
-						description = description:utf8sub(1, 37).."..."
-					end
-
-					return "["..description.."]"
-				elseif (!chatType) then
-					return L"unknown"
-				end
+			if (#description > 40) then
+				description = description:utf8sub(1, 37) .. "..."
 			end
+
+			return "[" .. description .. "]"
 		end
 	end
 
@@ -105,13 +87,11 @@ if (CLIENT) then
 			return
 		end
 
-		local bRecognize = false
-		local localCharacter = LocalPlayer():GetCharacter()
 		local character = IsValid(client) and client:GetCharacter()
+		local bRecognize = character and LocalPlayer():GetCharacter():DoesRecognize(character)
 
-		if (localCharacter and character) then
-			bRecognize = hook.Run("IsCharacterRecognized", localCharacter, character:GetID())
-				or hook.Run("IsPlayerRecognized", client)
+		if (!bRecognize) then
+			panel:SetDescription(L("noRecog"))
 		end
 
 		panel.icon:SetHidden(!bRecognize)

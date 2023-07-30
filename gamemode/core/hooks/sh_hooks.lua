@@ -653,3 +653,16 @@ else
 		UpdateAnimationTable(client, bEntered and vehicle or false)
 	end)
 end
+
+
+function GM:GetCharacterName(character)
+	return character:GetName()
+end
+
+function GM:GetCharacterDescription(character)
+	return character:GetDescription()
+end
+
+function GM:GetSpeakerName(client, chatType)
+	return client:GetDisplayName()
+end

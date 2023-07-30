@@ -448,7 +448,7 @@ function GetCharacterDescription(client)
 end
 
 --- @realm shared
-function GetCharacterName(speaker, chatType)
+function GetSpeakerName(speaker, chatType)
 end
 
 --- @realm shared
