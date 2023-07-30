@@ -250,7 +250,6 @@ function PANEL:AddPlayer(client, index)
 	local panel = self:Add("ixScoreboardRow")
 	panel:SetPlayer(client)
 	panel:Dock(TOP)
-	panel:SetZPos(2)
 	panel:SetBackgroundPaintFunction(rowPaintFunctions[id])
 
 	self:SizeToContents()
