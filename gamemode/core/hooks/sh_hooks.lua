@@ -498,33 +498,10 @@ end
 function GM:Move(client, moveData)
 	local char = client:GetCharacter()
 
-	if (char) then
-		if (client:GetNetVar("actEnterAngle")) then
-			moveData:SetForwardSpeed(0)
-			moveData:SetSideSpeed(0)
-			moveData:SetVelocity(vector_origin)
-		end
-
-		if (client:GetMoveType() == MOVETYPE_WALK and moveData:KeyDown(IN_WALK)) then
-			local mf, ms = 0, 0
-			local speed = client:GetWalkSpeed()
-			local ratio = ix.config.Get("walkRatio")
-
-			if (moveData:KeyDown(IN_FORWARD)) then
-				mf = ratio
-			elseif (moveData:KeyDown(IN_BACK)) then
-				mf = -ratio
-			end
-
-			if (moveData:KeyDown(IN_MOVELEFT)) then
-				ms = -ratio
-			elseif (moveData:KeyDown(IN_MOVERIGHT)) then
-				ms = ratio
-			end
-
-			moveData:SetForwardSpeed(mf * speed)
-			moveData:SetSideSpeed(ms * speed)
-		end
+	if (char and client:GetNetVar("actEnterAngle")) then
+		moveData:SetForwardSpeed(0)
+		moveData:SetSideSpeed(0)
+		moveData:SetVelocity(vector_origin)
 	end
 end
 

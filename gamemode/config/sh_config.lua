@@ -98,6 +98,7 @@ ix.config.Add("saveInterval", 300, "How often characters save in seconds.", nil,
 ix.config.Add("walkSpeed", 130, "How fast a player normally walks.", function(oldValue, newValue)
 	for _, v in ipairs(player.GetAll())	do
 		v:SetWalkSpeed(newValue)
+		v:SetSlowWalkSpeed(newValue * ix.config.Get("walkRatio"))
 	end
 end, {
 	data = {min = 75, max = 500},
@@ -111,7 +112,11 @@ end, {
 	data = {min = 75, max = 500},
 	category = "characters"
 })
-ix.config.Add("walkRatio", 0.5, "How fast one goes when holding ALT.", nil, {
+ix.config.Add("walkRatio", 0.5, "How fast one goes when holding ALT.", function(oldValue, newValue)
+	for _, v in ipairs(player.GetAll())	do
+		v:SetSlowWalkSpeed(ix.config.Get("walkSpeed") * newValue)
+	end
+end, {
 	data = {min = 0, max = 1, decimals = 1},
 	category = "characters"
 })

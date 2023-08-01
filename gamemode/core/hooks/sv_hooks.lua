@@ -513,6 +513,7 @@ function GM:PlayerLoadout(client)
 		client:SetModel(character:GetModel())
 		client:Give("ix_hands")
 		client:SetWalkSpeed(ix.config.Get("walkSpeed"))
+		client:SetSlowWalkSpeed(ix.config.Get("walkSpeed") * ix.config.Get("walkRatio"))
 		client:SetRunSpeed(ix.config.Get("runSpeed"))
 		client:SetHealth(character:GetData("health", client:GetMaxHealth()))
 
