@@ -366,4 +366,124 @@ hook.Add("PopulateHelpMenu", "ixHelpMenu", function(tabs)
 			end
 		end
 	end
+
+	if LocalPlayer():IsAdmin() then
+		tabs["items"] = function(container)
+			local categories = {}
+			local entries = {}
+
+			local function filter(value)
+				value = string.PatternSafe(value:lower())
+
+				for _, v in pairs(entries) do
+					local show = v.item.uniqueID:lower():find(value) or v.item.name:lower():find(value) or v.category:lower():find(value)
+
+					v:CreateAnimation(0.5, {
+						index = 21,
+						target = {ixHeight = show and v.storedHeight or 0},
+						easing = "outQuint",
+
+						Think = function(animation, panel)
+							if show then
+								panel:SetTall(math.ceil(panel.ixHeight)) -- Fixes a weird jumping issue
+							else
+								panel:SetTall(panel.ixHeight)
+							end
+						end
+					})
+				end
+			end
+
+			local entry = container:Add("ixIconTextEntry")
+			entry:Dock(TOP)
+			entry:SetEnterAllowed(false)
+			entry:SetZPos(-1)
+
+			entry.OnChange = function()
+				filter(entry:GetValue())
+			end
+
+			entry:RequestFocus()
+
+			for _, v in pairs(ix.item.list) do
+				local category = v.category or ""
+
+				if (!categories[category]) then
+					categories[category] = {v}
+				else
+					table.insert(categories[category], v)
+				end
+			end
+
+			for name, category in SortedPairs(categories) do
+				local banner = container:Add("Panel")
+				banner:Dock(TOP)
+				banner:DockMargin(0, 0, 0, 8)
+				banner:DockPadding(8, 8, 8, 8)
+				banner.Paint = function(_, width, height)
+					surface.SetDrawColor(Color(0, 0, 0, 66))
+					surface.DrawRect(0, 0, width, height)
+				end
+
+				local label = banner:Add("DLabel")
+				label:SetFont("ixMediumLightFont")
+				label:SetText(name:upper())
+				label:Dock(FILL)
+				label:SetTextColor(color_white)
+				label:SetExpensiveShadow(1, color_black)
+				label:SizeToContents()
+
+				banner:SizeToChildren(true, true)
+
+				for _, item in SortedPairsByMemberValue(category, "name") do
+					local wrapper = container:Add("Panel")
+					wrapper:Dock(TOP)
+					wrapper:DockPadding(0, 0, 0, 8)
+
+					wrapper.item = item
+					wrapper.category = name
+
+					table.insert(entries, wrapper)
+
+					local top = wrapper:Add("Panel")
+					top:Dock(TOP)
+
+					-- name
+					local title = top:Add("DLabel")
+					title:SetFont("ixMediumLightFont")
+					title:SetText(item.name)
+					title:Dock(LEFT)
+					title:SetTextColor(ix.config.Get("color"))
+					title:SetExpensiveShadow(1, color_black)
+					title:SizeToContents()
+
+					-- class
+					local class = top:Add("DLabel")
+					class:SetFont("ixSmallFont")
+					class:SetText(item.uniqueID)
+					class:DockMargin(8, 0, 0, 0)
+					class:Dock(LEFT)
+					class:SetContentAlignment(1)
+					class:SetTextColor(Color(150, 150, 150))
+					class:SetExpensiveShadow(1, color_black)
+					class:SizeToContents()
+
+					-- description
+					local description = wrapper:Add("DLabel")
+					description:SetFont("ixSmallFont")
+					description:SetText(item.description)
+					description:Dock(TOP)
+					description:SetTextColor(color_white)
+					description:SetExpensiveShadow(1, color_black)
+					description:SizeToContents()
+
+					wrapper:InvalidateLayout(true)
+					wrapper:SizeToChildren(true, true)
+
+					wrapper.storedHeight = wrapper:GetTall()
+					wrapper.ixHeight = wrapper.storedHeight
+				end
+			end
+		end
+	end
 end)
