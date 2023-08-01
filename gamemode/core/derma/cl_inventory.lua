@@ -24,11 +24,10 @@ local function RenderNewIcon(panel, itemTable)
 	end
 end
 
-local function InventoryAction(action, itemID, invID, data)
+local function InventoryAction(action, itemID, data)
 	net.Start("ixInventoryAction")
 		net.WriteString(action)
 		net.WriteUInt(itemID, 32)
-		net.WriteUInt(invID, 32)
 		net.WriteTable(data or {})
 	net.SendToServer()
 end
@@ -102,7 +101,7 @@ function PANEL:DoRightClick()
 						end
 
 						if (send != false) then
-							InventoryAction(k, itemTable.id, inventory)
+							InventoryAction(k, itemTable.id)
 						end
 					itemTable.player = nil
 				end)
@@ -125,7 +124,7 @@ function PANEL:DoRightClick()
 								end
 
 								if (send != false) then
-									InventoryAction(k, itemTable.id, inventory, sub.data)
+									InventoryAction(k, itemTable.id, sub.data)
 								end
 							itemTable.player = nil
 						end)
@@ -145,7 +144,7 @@ function PANEL:DoRightClick()
 						end
 
 						if (send != false) then
-							InventoryAction(k, itemTable.id, inventory)
+							InventoryAction(k, itemTable.id)
 						end
 					itemTable.player = nil
 				end):SetImage(v.icon or "icon16/brick.png")
@@ -169,7 +168,7 @@ function PANEL:DoRightClick()
 					end
 
 					if (send != false) then
-						InventoryAction("drop", itemTable.id, inventory)
+						InventoryAction("drop", itemTable.id)
 					end
 				itemTable.player = nil
 			end):SetImage(info.icon or "icon16/brick.png")
@@ -191,7 +190,7 @@ function PANEL:OnDrop(bDragging, inventoryPanel, inventory, gridX, gridY)
 		local inventoryID = self.inventoryID
 
 		if (inventoryID) then
-			InventoryAction("drop", item.id, inventoryID, {})
+			InventoryAction("drop", item.id)
 		end
 	elseif (inventoryPanel:IsAllEmpty(gridX, gridY, item.width, item.height, self)) then
 		local oldX, oldY = self.gridX, self.gridY
@@ -209,7 +208,7 @@ function PANEL:OnDrop(bDragging, inventoryPanel, inventory, gridX, gridY)
 					surface.PlaySound(combineItem.functions.combine.sound)
 				end
 
-				InventoryAction("combine", combineItem.id, inventoryID, {item.id})
+				InventoryAction("combine", combineItem.id, {item.id})
 			combineItem.player = nil
 		end
 	end

@@ -578,14 +578,31 @@ do
 			query:Execute()
 		end
 
-		function ix.item.PerformInventoryAction(client, action, item, invID, data)
+		function ix.item.PerformInventoryAction(client, action, item, data)
 			local character = client:GetCharacter()
 
 			if (!character) then
 				return
 			end
 
-			local inventory = ix.item.inventories[invID or 0]
+			local entity
+
+			if (isnumber(item)) then
+				item = ix.item.instances[item]
+
+				if (!item) then
+					return
+				end
+			elseif (isentity(item)) then
+				if (!IsValid(item)) then
+					return
+				end
+
+				entity = item
+				item = ix.item.instances[item.ixItemID]
+			end
+
+			local inventory = ix.item.inventories[item.invID or 0]
 
 			if (hook.Run("CanPlayerInteractItem", client, action, item, data) == false) then
 				return
@@ -595,28 +612,10 @@ do
 				return
 			end
 
-			if (isentity(item)) then
-				if (IsValid(item)) then
-					local entity = item
-					local itemID = item.ixItemID
-					item = ix.item.instances[itemID]
-
-					if (!item) then
-						return
-					end
-
-					item.entity = entity
-					item.player = client
-				else
-					return
-				end
-			elseif (isnumber(item)) then
-				item = ix.item.instances[item]
-
-				if (!item) then
-					return
-				end
-
+			if (IsValid(entity)) then
+				item.entity = entity
+				item.player = client
+			else
 				item.player = client
 			end
 
@@ -798,7 +797,7 @@ do
 		end)
 
 		net.Receive("ixInventoryAction", function(length, client)
-			ix.item.PerformInventoryAction(client, net.ReadString(), net.ReadUInt(32), net.ReadUInt(32), net.ReadTable())
+			ix.item.PerformInventoryAction(client, net.ReadString(), net.ReadUInt(32), net.ReadTable())
 		end)
 	end
 
